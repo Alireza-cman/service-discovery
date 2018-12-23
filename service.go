@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"log"
 	math_rand "math/rand"
+	"sync"
 	"time"
 
 	"github.com/schollz/peerdiscovery"
@@ -17,7 +18,7 @@ func main() {
 		bar := progressbar.New(100)
 		for i := 0; i < 100; i++ {
 			bar.Add(1)
-			time.Sleep(100 * time.Millisecond)
+			time.Sleep(98 * time.Millisecond)
 		}
 		fmt.Print("\n")
 	}()
@@ -25,10 +26,9 @@ func main() {
 	// discover peers
 	discoveries, err := peerdiscovery.Discover(peerdiscovery.Settings{
 		Limit:     -1,
-		Payload:   []byte("alireza"),
+		Payload:   []byte(randStringBytesMaskImprSrc(10)),
 		Delay:     500 * time.Millisecond,
 		TimeLimit: 10 * time.Second,
-		AllowSelf: true,
 	})
 
 	// print out results
@@ -41,9 +41,14 @@ func main() {
 				fmt.Printf("%d) '%s' with payload '%s'\n", i, d.Address, d.Payload)
 			}
 		} else {
+			fmt.Println("")
 			fmt.Println("Found no devices. You need to run this on another computer at the same time.")
 		}
 	}
+	var wg sync.WaitGroup
+
+	wg.Add(1)
+	wg.Wait()
 }
 
 // src is seeds the random generator for generating random strings
